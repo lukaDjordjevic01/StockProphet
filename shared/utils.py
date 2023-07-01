@@ -17,7 +17,6 @@ def fetch_api_data(company_code, period):
     data.index = pd.to_datetime(data.index)
     data['Date'] = (data.index - pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
     data = data.sort_values('Date')
-
     return data, meta_data
 
 
@@ -35,6 +34,19 @@ def plot_predictions(x_test, y_test, y_pred, prophet_y_pred, title):
     plt.plot(X_test_dates_sorted, y_pred_sorted, color='red', label='Predicted')
     plt.plot(X_test_dates_sorted, prophet_y_pred_sorted, color='green', label='Prophet predict')
     plt.title(title)
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.legend()
+    plt.show()
+
+def plot_test(response):
+    plt.figure(figsize=(14, 8))
+    X_test_dates = pd.to_datetime(response["dates"], unit='s')
+    print(len(X_test_dates))
+    plt.plot(X_test_dates, response["open"]["actual"], color='blue', label='Actual')
+    plt.plot(X_test_dates, response["open"]["predictedLibrary"], color='red', label='Predicted')
+    plt.plot(X_test_dates, response["open"]["predictedCustom"], color='green', label='Prophet predict')
+    plt.title("Test")
     plt.xlabel('Date')
     plt.ylabel('Close Price')
     plt.legend()

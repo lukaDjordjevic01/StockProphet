@@ -20,7 +20,9 @@ def index(code):
 @app.route('/linear/<company_code>/<period>', methods=['GET'])
 def linear_regression(company_code, period):
     body = linear_regression_prediction(company_code, period)
-    return make_response(body, 200)
+    response = make_response(body, 200)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 if __name__ == '__main__':

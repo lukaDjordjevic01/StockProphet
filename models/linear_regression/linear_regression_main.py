@@ -1,9 +1,11 @@
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
+import numpy as np
+
 
 from models.prophet_models.prophet_linear_regression import ProphetLinearRegression
-from shared.utils import fetch_api_data, plot_predictions
+from shared.utils import fetch_api_data, plot_predictions, plot_test
 
 
 def linear_regression_prediction(company_code, period):
@@ -30,8 +32,8 @@ def linear_regression_prediction(company_code, period):
     response = {
         "companyCode": company_code,
         "period": period,
+        "dates": x_test_open.flatten().tolist(),
         "open": {
-            "dates": x_test_open.tolist(),
             "predictedCustom": prophet_y_pred_open.tolist(),
             "predictedLibrary": y_pred_open.tolist(),
             "errorCustom": prophet_mse_open,
@@ -39,7 +41,6 @@ def linear_regression_prediction(company_code, period):
             "actual": y_test_open.tolist()
         },
         "close": {
-            "dates": x_test_close.tolist(),
             "predictedCustom": prophet_y_pred_close.tolist(),
             "predictedLibrary": y_pred_close.tolist(),
             "errorCustom": prophet_mse_close,
@@ -47,7 +48,6 @@ def linear_regression_prediction(company_code, period):
             "actual": y_test_close.tolist()
         },
         "high": {
-            "dates": x_test_high.tolist(),
             "predictedCustom": prophet_y_pred_high.tolist(),
             "predictedLibrary": y_pred_high.tolist(),
             "errorCustom": prophet_mse_high,
@@ -55,7 +55,6 @@ def linear_regression_prediction(company_code, period):
             "actual": y_test_high.tolist()
         },
         "low": {
-            "dates": x_test_low.tolist(),
             "predictedCustom": prophet_y_pred_low.tolist(),
             "predictedLibrary": y_pred_low.tolist(),
             "errorCustom": prophet_mse_low,
@@ -63,7 +62,6 @@ def linear_regression_prediction(company_code, period):
             "actual": y_test_low.tolist()
         },
         "volume": {
-            "dates": x_test_volume.tolist(),
             "predictedCustom": prophet_y_pred_volume.tolist(),
             "predictedLibrary": y_pred_volume.tolist(),
             "errorCustom": prophet_mse_volume,
@@ -93,15 +91,36 @@ def prophet_predict(x_train, x_test, y_train, y_test):
 
     return y_pred, mse
 
-
 def prepare_data(data, factor):
     y = data[factor].values
     x = data['Date'].values.reshape(-1, 1)
+
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+    # Combine x_train and y_train
+    combined_train = np.concatenate((x_train, y_train.reshape(-1, 1)), axis=1)
+
+    # Sort the combined_train array by x_train
+    sorted_combined_train = combined_train[combined_train[:, 0].argsort()]
+
+    # Split the sorted_combined_train array into x_train and y_train
+    x_train = sorted_combined_train[:, 0].reshape(-1, 1)
+    y_train = sorted_combined_train[:, 1]
+
+    # Combine x_test and y_test
+    combined_test = np.concatenate((x_test, y_test.reshape(-1, 1)), axis=1)
+
+    # Sort the combined_test array by x_test
+    sorted_combined_test = combined_test[combined_test[:, 0].argsort()]
+
+    # Split the sorted_combined_test array into x_test and y_test
+    x_test = sorted_combined_test[:, 0].reshape(-1, 1)
+    y_test = sorted_combined_test[:, 1]
 
     return x_train, x_test, y_train, y_test
 
 
 # if __name__ == '__main__':
-#     x_test_1, y_test_1, y_pred_1, prophet_y_pred_1 = linear_regression_prediction("IBM", "weekly")
-#     plot_predictions(x_test_1, y_test_1, y_pred_1, prophet_y_pred_1, "Plot title")
+#     # x_test_1, y_test_1, y_pred_1, prophet_y_pred_1 = linear_regression_prediction("IBM", "weekly")
+#     # plot_predictions(x_test_1, y_test_1, y_pred_1, prophet_y_pred_1, "Plot title")
+#     plot_test(linear_regression_prediction("AMZN", "hourly"))

@@ -4,6 +4,7 @@ class ProphetLinearRegression:
         self.c = 0
 
     def fit(self, X, y):
+        X = X.flatten()
         x_mean = X.mean()
         y_mean = y.mean()
 
@@ -17,7 +18,7 @@ class ProphetLinearRegression:
         self.c = y_mean - self.m * x_mean
 
     def predict(self, X):
-        return self.m * X + self.c
+        return self.m * X.flatten() + self.c
 
     def mse(self, y_true, y_pred):
         return ((y_true - y_pred) ** 2).mean()
