@@ -1,13 +1,8 @@
-import json
-
-import pandas as pd
-from numpy import int64
-from datetime import datetime
-from shared.secrets import API_KEY
 from alpha_vantage.timeseries import TimeSeries
-from flask import Flask, request, make_response
+from flask import Flask, make_response
 
 from models.linear_regression.linear_regression_main import linear_regression_prediction
+from shared.secrets import API_KEY
 
 app = Flask(__name__)
 

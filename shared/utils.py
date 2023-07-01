@@ -1,9 +1,8 @@
 import pandas as pd
-from matplotlib import pyplot as plt
-from numpy import int64
-from datetime import datetime
-from shared.secrets import API_KEY
 from alpha_vantage.timeseries import TimeSeries
+from matplotlib import pyplot as plt
+
+from shared.secrets import API_KEY
 
 
 def fetch_api_data(company_code, period):
@@ -22,17 +21,19 @@ def fetch_api_data(company_code, period):
     return data, meta_data
 
 
-def plot_predictions(x_test_1, y_test_1, y_pred_1, title):
-    X_test_dates = pd.to_datetime(x_test_1.flatten(), unit='s')
+def plot_predictions(x_test, y_test, y_pred, prophet_y_pred, title):
+    X_test_dates = pd.to_datetime(x_test.flatten(), unit='s')
 
     sorted_indices = X_test_dates.argsort()
     X_test_dates_sorted = X_test_dates.values[sorted_indices]
-    y_test_sorted = y_test_1[sorted_indices.flatten()]
-    y_pred_sorted = y_pred_1[sorted_indices.flatten()]
+    y_test_sorted = y_test[sorted_indices.flatten()]
+    y_pred_sorted = y_pred[sorted_indices.flatten()]
+    prophet_y_pred_sorted = prophet_y_pred[sorted_indices.flatten()]
 
     plt.figure(figsize=(14, 8))
     plt.plot(X_test_dates_sorted, y_test_sorted, color='blue', label='Actual')
     plt.plot(X_test_dates_sorted, y_pred_sorted, color='red', label='Predicted')
+    plt.plot(X_test_dates_sorted, prophet_y_pred_sorted, color='green', label='Prophet predict')
     plt.title(title)
     plt.xlabel('Date')
     plt.ylabel('Close Price')
