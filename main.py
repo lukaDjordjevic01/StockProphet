@@ -10,27 +10,9 @@ from shared.secrets import API_KEY
 app = Flask(__name__)
 
 
-@app.route('/hello/<code>', methods=['GET'])
-def index(code):
-    ts = TimeSeries(key=API_KEY, output_format='pandas')
-    data, meta_data = ts.get_daily_adjusted(symbol=code)
-    data.rename(columns=lambda x: x.split('. ')[-1], inplace=True)
-    data = data[['close']]
-    print(data['close'])
-    return data.to_json(orient='index')
-
-
 @app.route('/linear/<company_code>/<period>', methods=['GET'])
 def linear_regression(company_code, period):
     body = linear_regression_prediction(company_code, period)
-    response = make_response(body, 200)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route('/svm/<company_code>/<period>', methods=['GET'])
-def support_vector_machine(company_code, period):
-    body = support_vector_machine_prediction(company_code, period)
     response = make_response(body, 200)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
@@ -47,6 +29,14 @@ def decision_tree(company_code, period):
 @app.route('/neural-network/<company_code>/<period>', methods=['GET'])
 def neural_network(company_code, period):
     body = neural_network_prediction(company_code, period)
+    response = make_response(body, 200)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route('/svm/<company_code>/<period>', methods=['GET'])
+def support_vector_machine(company_code, period):
+    body = support_vector_machine_prediction(company_code, period)
     response = make_response(body, 200)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response

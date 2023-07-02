@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 
 from models.prophet_models.prophet_linear_regression import ProphetLinearRegression
-from shared.utils import fetch_api_data, plot_predictions, plot_test
+from shared.utils import fetch_api_data
 
 
 def linear_regression_prediction(company_code, period):
@@ -70,7 +70,6 @@ def linear_regression_prediction(company_code, period):
         },
     }
 
-    # return x_test_open, y_test_open, y_pred_open, prophet_y_pred_open
     return response
 
 
@@ -98,29 +97,18 @@ def prepare_data(data, factor):
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
-    # Combine x_train and y_train
     combined_train = np.concatenate((x_train, y_train.reshape(-1, 1)), axis=1)
 
-    # Sort the combined_train array by x_train
     sorted_combined_train = combined_train[combined_train[:, 0].argsort()]
 
-    # Split the sorted_combined_train array into x_train and y_train
     x_train = sorted_combined_train[:, 0].reshape(-1, 1)
     y_train = sorted_combined_train[:, 1]
 
-    # Combine x_test and y_test
     combined_test = np.concatenate((x_test, y_test.reshape(-1, 1)), axis=1)
 
-    # Sort the combined_test array by x_test
     sorted_combined_test = combined_test[combined_test[:, 0].argsort()]
 
-    # Split the sorted_combined_test array into x_test and y_test
     x_test = sorted_combined_test[:, 0].reshape(-1, 1)
     y_test = sorted_combined_test[:, 1]
 
     return x_train, x_test, y_train, y_test
-
-# if __name__ == '__main__':
-#     # x_test_1, y_test_1, y_pred_1, prophet_y_pred_1 = linear_regression_prediction("IBM", "weekly")
-#     # plot_predictions(x_test_1, y_test_1, y_pred_1, prophet_y_pred_1, "Plot title")
-#     plot_test(linear_regression_prediction("AMZN", "hourly"))

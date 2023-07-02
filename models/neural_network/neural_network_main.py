@@ -3,7 +3,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 from models.prophet_models.prophet_neural_network import ProphetNeuralNetwork
 from shared.utils import fetch_api_data
