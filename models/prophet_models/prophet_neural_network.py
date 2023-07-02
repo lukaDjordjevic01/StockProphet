@@ -46,7 +46,7 @@ class ProphetNeuralNetwork:
     def fit(self, X, y, epochs=100, batch_size=128):  # Added batch_size parameter
         X = self.scaler.fit_transform(X)
         for epoch in range(epochs):
-            X, y = shuffle(X, y)  # Shuffling the data before each epoch to prevent the model from learning the order of training instances
+            X, y = shuffle(X, y)
             for i in range(0, X.shape[0], batch_size):  # Mini-batch gradient descent
                 X_batch = X[i:i + batch_size]
                 y_batch = y[i:i + batch_size]
