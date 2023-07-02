@@ -3,7 +3,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-
 from models.prophet_models.prophet_linear_regression import ProphetLinearRegression
 from shared.utils import fetch_api_data, plot_predictions, plot_test
 
@@ -27,7 +26,8 @@ def linear_regression_prediction(company_code, period):
     prophet_y_pred_close, prophet_mse_close = prophet_predict(x_train_close, x_test_close, y_train_close, y_test_close)
     prophet_y_pred_high, prophet_mse_high = prophet_predict(x_train_high, x_test_high, y_train_high, y_test_high)
     prophet_y_pred_low, prophet_mse_low = prophet_predict(x_train_low, x_test_low, y_train_low, y_test_low)
-    prophet_y_pred_volume, prophet_mse_volume = prophet_predict(x_train_volume, x_test_volume, y_train_volume, y_test_volume)
+    prophet_y_pred_volume, prophet_mse_volume = prophet_predict(x_train_volume, x_test_volume, y_train_volume,
+                                                                y_test_volume)
 
     response = {
         "companyCode": company_code,
@@ -91,6 +91,7 @@ def prophet_predict(x_train, x_test, y_train, y_test):
 
     return y_pred, mse
 
+
 def prepare_data(data, factor):
     y = data[factor].values
     x = data['Date'].values.reshape(-1, 1)
@@ -118,7 +119,6 @@ def prepare_data(data, factor):
     y_test = sorted_combined_test[:, 1]
 
     return x_train, x_test, y_train, y_test
-
 
 # if __name__ == '__main__':
 #     # x_test_1, y_test_1, y_pred_1, prophet_y_pred_1 = linear_regression_prediction("IBM", "weekly")
