@@ -2,6 +2,7 @@ from alpha_vantage.timeseries import TimeSeries
 from flask import Flask, make_response
 
 from models.linear_regression.linear_regression_main import linear_regression_prediction
+from models.support_vector_machine.support_vector_machine_main import support_vector_machine_prediction
 from shared.secrets import API_KEY
 
 app = Flask(__name__)
@@ -20,6 +21,14 @@ def index(code):
 @app.route('/linear/<company_code>/<period>', methods=['GET'])
 def linear_regression(company_code, period):
     body = linear_regression_prediction(company_code, period)
+    response = make_response(body, 200)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route('/svm/<company_code>/<period>', methods=['GET'])
+def support_vector_machine(company_code, period):
+    body = support_vector_machine_prediction(company_code, period)
     response = make_response(body, 200)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
