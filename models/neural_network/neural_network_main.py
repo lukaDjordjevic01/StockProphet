@@ -112,7 +112,7 @@ def predict(model, x_train, x_test, y_train, y_test):
 
 def prophet_predict(x_train, x_test, y_train, y_test):
     model = ProphetNeuralNetwork(x_train.shape[1], 50, 1)
-    model.fit(x_train, y_train, epochs=0)
+    model.fit(x_train, y_train, epochs=3*len(x_train))
     y_pred = model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
 
