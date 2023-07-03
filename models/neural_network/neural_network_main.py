@@ -1,7 +1,7 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
@@ -25,18 +25,18 @@ def neural_network_prediction(company_code, period):
     model_low = create_model(x_train_low.shape[1])
     model_volume = create_model(x_train_volume.shape[1])
 
-    y_pred_open, mse_open = predict(model_open, x_train_open, x_test_open, y_train_open, y_test_open)
-    y_pred_close, mse_close = predict(model_close, x_train_close, x_test_close, y_train_close, y_test_close)
-    y_pred_high, mse_high = predict(model_high, x_train_high, x_test_high, y_train_high, y_test_high)
-    y_pred_low, mse_low = predict(model_low, x_train_low, x_test_low, y_train_low, y_test_low)
-    y_pred_volume, mse_volume = predict(model_volume, x_train_volume, x_test_volume, y_train_volume, y_test_volume)
+    y_pred_open, r2_open = predict(model_open, x_train_open, x_test_open, y_train_open, y_test_open)
+    y_pred_close, r2_close = predict(model_close, x_train_close, x_test_close, y_train_close, y_test_close)
+    y_pred_high, r2_high = predict(model_high, x_train_high, x_test_high, y_train_high, y_test_high)
+    y_pred_low, r2_low = predict(model_low, x_train_low, x_test_low, y_train_low, y_test_low)
+    y_pred_volume, r2_volume = predict(model_volume, x_train_volume, x_test_volume, y_train_volume, y_test_volume)
 
-    prophet_y_pred_open, prophet_mse_open = prophet_predict(x_train_open, x_test_open, y_train_open, y_test_open)
-    prophet_y_pred_close, prophet_mse_close = prophet_predict(x_train_close, x_test_close, y_train_close, y_test_close)
-    prophet_y_pred_high, prophet_mse_high = prophet_predict(x_train_high, x_test_high, y_train_high, y_test_high)
-    prophet_y_pred_low, prophet_mse_low = prophet_predict(x_train_low, x_test_low, y_train_low, y_test_low)
-    prophet_y_pred_volume, prophet_mse_volume = prophet_predict(x_train_volume, x_test_volume, y_train_volume,
-                                                                y_test_volume)
+    prophet_y_pred_open, prophet_r2_open = prophet_predict(x_train_open, x_test_open, y_train_open, y_test_open)
+    prophet_y_pred_close, prophet_r2_close = prophet_predict(x_train_close, x_test_close, y_train_close, y_test_close)
+    prophet_y_pred_high, prophet_r2_high = prophet_predict(x_train_high, x_test_high, y_train_high, y_test_high)
+    prophet_y_pred_low, prophet_r2_low = prophet_predict(x_train_low, x_test_low, y_train_low, y_test_low)
+    prophet_y_pred_volume, prophet_r2_volume = prophet_predict(x_train_volume, x_test_volume, y_train_volume,
+                                                               y_test_volume)
 
     prophet_y_pred_open_rescaled = scaler_y_open.inverse_transform(prophet_y_pred_open)
     prophet_y_pred_close_rescaled = scaler_y_close.inverse_transform(prophet_y_pred_close)
@@ -65,36 +65,36 @@ def neural_network_prediction(company_code, period):
         "open": {
             "predictedCustom": prophet_y_pred_open_rescaled.flatten().tolist(),
             "predictedLibrary": y_pred_open_rescaled.flatten().tolist(),
-            "errorCustom": prophet_mse_open,
-            "errorLibrary": mse_open,
+            "errorCustom": prophet_r2_open,
+            "errorLibrary": r2_open,
             "actual": y_test_open_rescaled.flatten().tolist()
         },
         "close": {
             "predictedCustom": prophet_y_pred_close_rescaled.flatten().tolist(),
             "predictedLibrary": y_pred_close_rescaled.flatten().tolist(),
-            "errorCustom": prophet_mse_close,
-            "errorLibrary": mse_close,
+            "errorCustom": prophet_r2_close,
+            "errorLibrary": r2_close,
             "actual": y_test_close_rescaled.flatten().tolist()
         },
         "high": {
             "predictedCustom": prophet_y_pred_high_rescaled.flatten().tolist(),
             "predictedLibrary": y_pred_high_rescaled.flatten().tolist(),
-            "errorCustom": prophet_mse_high,
-            "errorLibrary": mse_high,
+            "errorCustom": prophet_r2_high,
+            "errorLibrary": r2_high,
             "actual": y_test_high_rescaled.flatten().tolist()
         },
         "low": {
             "predictedCustom": prophet_y_pred_low_rescaled.flatten().tolist(),
             "predictedLibrary": y_pred_low_rescaled.flatten().tolist(),
-            "errorCustom": prophet_mse_low,
-            "errorLibrary": mse_low,
+            "errorCustom": prophet_r2_low,
+            "errorLibrary": r2_low,
             "actual": y_test_low_rescaled.flatten().tolist()
         },
         "volume": {
             "predictedCustom": prophet_y_pred_volume_rescaled.flatten().tolist(),
             "predictedLibrary": y_pred_volume_rescaled.flatten().tolist(),
-            "errorCustom": prophet_mse_volume,
-            "errorLibrary": mse_volume,
+            "errorCustom": prophet_r2_volume,
+            "errorLibrary": r2_volume,
             "actual": y_test_volume_rescaled.flatten().tolist()
         },
     }
@@ -105,18 +105,18 @@ def neural_network_prediction(company_code, period):
 def predict(model, x_train, x_test, y_train, y_test):
     model.fit(x_train, y_train, epochs=50, batch_size=32, verbose=0)
     y_pred = model.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
-    return y_pred, mse
+    return y_pred, r2
 
 
 def prophet_predict(x_train, x_test, y_train, y_test):
     model = ProphetNeuralNetwork(x_train.shape[1], 50, 1)
     model.fit(x_train, y_train, epochs=3*len(x_train))
     y_pred = model.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
-    return y_pred, mse
+    return y_pred, r2
 
 
 def create_model(input_dim):
