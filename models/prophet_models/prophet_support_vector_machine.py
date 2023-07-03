@@ -3,6 +3,12 @@ import numpy as np
 
 class ProphetLinearSVM:
     def __init__(self, learning_rate=0.01, lambda_param=0.01, n_iters=1000):
+        """
+        :param learning_rate:
+        :param lambda_param:
+        :param n_iters:
+        """
+
         self.lr = learning_rate
         self.lambda_param = lambda_param
         self.n_iters = n_iters
@@ -10,6 +16,12 @@ class ProphetLinearSVM:
         self.b = None
 
     def fit(self, X, y):
+        """
+        :param X:
+        :param y:
+        :return:
+        """
+
         n_samples, n_features = X.shape
 
         y_ = np.where(y <= 0, -1, 1)
@@ -27,5 +39,10 @@ class ProphetLinearSVM:
                     self.b -= self.lr * y_[idx]
 
     def predict(self, X):
+        """
+
+        :param X:
+        :return:
+        """
         linear_output = np.dot(X, self.w) - self.b
         return np.sign(linear_output)

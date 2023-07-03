@@ -3,6 +3,15 @@ import numpy as np
 
 class Node:
     def __init__(self, feature_index=None, threshold=None, left=None, right=None, var_red=None, value=None):
+        """
+
+        :param feature_index:
+        :param threshold:
+        :param left:
+        :param right:
+        :param var_red:
+        :param value:
+        """
         self.feature_index = feature_index
         self.threshold = threshold
         self.left = left
@@ -13,11 +22,22 @@ class Node:
 
 class MyDecisionTreeRegressor:
     def __init__(self, min_samples_split=2, max_depth=2):
+        """
+
+        :param min_samples_split:
+        :param max_depth:
+        """
         self.root = None
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
 
     def build_tree(self, dataset, curr_depth=0):
+        """
+
+        :param dataset:
+        :param curr_depth:
+        :return:
+        """
         X, Y = dataset[:,:-1], dataset[:,-1]
         num_samples, num_features = np.shape(X)
         best_split = {}
@@ -33,6 +53,13 @@ class MyDecisionTreeRegressor:
         return Node(value=leaf_value)
 
     def get_best_split(self, dataset, num_samples, num_features):
+        """
+
+        :param dataset:
+        :param num_samples:
+        :param num_features:
+        :return:
+        """
         best_split = {}
         max_var_red = -float("inf")
         for feature_index in range(num_features):
@@ -53,21 +80,46 @@ class MyDecisionTreeRegressor:
         return best_split
 
     def split(self, dataset, feature_index, threshold):
+        """
+
+        :param dataset:
+        :param feature_index:
+        :param threshold:
+        :return:
+        """
         dataset_left = np.array([row for row in dataset if row[feature_index]<=threshold])
         dataset_right = np.array([row for row in dataset if row[feature_index]>threshold])
         return dataset_left, dataset_right
 
     def variance_reduction(self, parent, l_child, r_child):
+        """
+
+        :param parent:
+        :param l_child:
+        :param r_child:
+        :return:
+        """
         weight_l = len(l_child) / len(parent)
         weight_r = len(r_child) / len(parent)
         reduction = np.var(parent) - (weight_l*np.var(l_child) + weight_r*np.var(r_child))
         return reduction
 
     def calculate_leaf_value(self, Y):
+        """
+
+        :param Y:
+        :return:
+        """
         val = np.mean(Y)
         return val
 
     def print_tree(self, tree=None, indent=" "):
+        """
+
+        :param tree:
+        :param indent:
+        :return:
+        """
         if not tree:
             tree = self.root
 
@@ -82,11 +134,23 @@ class MyDecisionTreeRegressor:
             self.print_tree(tree.right, indent + indent)
 
     def fit(self, X, Y):
+        """
+
+        :param X:
+        :param Y:
+        :return:
+        """
         Y = np.reshape(Y, (-1, 1))
         dataset = np.concatenate((X, Y), axis=1)
         self.root = self.build_tree(dataset)
 
     def make_prediction(self, x, tree):
+        """
+
+        :param x:
+        :param tree:
+        :return:
+        """
         if tree.value!=None: return tree.value
         feature_val = x[tree.feature_index]
         if feature_val<=tree.threshold:
@@ -95,5 +159,10 @@ class MyDecisionTreeRegressor:
             return self.make_prediction(x, tree.right)
 
     def predict(self, X):
+        """
+
+        :param X:
+        :return:
+        """
         predictions = [self.make_prediction(x, self.root) for x in X]
         return predictions
