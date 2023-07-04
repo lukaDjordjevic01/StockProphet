@@ -4,6 +4,9 @@ import numpy as np
 class Node:
     def __init__(self, feature_index=None, threshold=None, left=None, right=None, var_red=None, value=None):
         """
+        This class creates a new node for the decision tree. It stores the index of the feature for the split,
+        the threshold value for the split, the left and right child nodes after the split, the reduction in variance
+        due to the split, and the predicted value if it's a leaf node.
 
         :param feature_index:
         :param threshold:
@@ -23,6 +26,8 @@ class Node:
 class MyDecisionTreeRegressor:
     def __init__(self, min_samples_split=2, max_depth=2):
         """
+        This class represents the decision tree model. It is initialized with minimum number of samples required
+        to allow a split (min_samples_split), and the maximum depth of the tree (max_depth).
 
         :param min_samples_split:
         :param max_depth:
@@ -33,6 +38,9 @@ class MyDecisionTreeRegressor:
 
     def build_tree(self, dataset, curr_depth=0):
         """
+        This is a recursive function that splits the dataset on the feature that results in the
+        largest variance reduction.It continues to build the tree by calling itself on the left
+        and right child nodes, until the stopping criteria are met.
 
         :param dataset:
         :param curr_depth:
@@ -54,6 +62,9 @@ class MyDecisionTreeRegressor:
 
     def get_best_split(self, dataset, num_samples, num_features):
         """
+        This function iterates over all features and all possible thresholds for each feature to find the split
+        that results in the highest variance reduction. It returns the feature index, threshold, left and right datasets
+        after the split, and the variance reduction due to the split.
 
         :param dataset:
         :param num_samples:
@@ -81,6 +92,8 @@ class MyDecisionTreeRegressor:
 
     def split(self, dataset, feature_index, threshold):
         """
+        This function splits the dataset into left and right nodes based on the given feature index and threshold.
+        It returns the left and right datasets after the split.
 
         :param dataset:
         :param feature_index:
@@ -93,6 +106,9 @@ class MyDecisionTreeRegressor:
 
     def variance_reduction(self, parent, l_child, r_child):
         """
+        This function calculates the reduction in variance due to a split. It's the difference between the variance
+        of the target values in the parent node and the weighted variance of the target values in the left and
+        right child nodes.
 
         :param parent:
         :param l_child:
@@ -106,6 +122,8 @@ class MyDecisionTreeRegressor:
 
     def calculate_leaf_value(self, Y):
         """
+        This function calculates the mean of the target values for the instances in a leaf node. This mean value
+        will be returned as the prediction for these instances.
 
         :param Y:
         :return:
@@ -115,6 +133,9 @@ class MyDecisionTreeRegressor:
 
     def print_tree(self, tree=None, indent=" "):
         """
+        This function prints the structure of the decision tree in a format that's easy to read. It uses recursion
+        to print the feature index, threshold and variance reduction at each node, and the predicted value
+        at each leaf node.
 
         :param tree:
         :param indent:
@@ -135,6 +156,8 @@ class MyDecisionTreeRegressor:
 
     def fit(self, X, Y):
         """
+        This function starts the training of the decision tree model. It concatenates the features and target into a
+        single dataset and calls the build_tree function to construct the decision tree.
 
         :param X:
         :param Y:
@@ -146,6 +169,8 @@ class MyDecisionTreeRegressor:
 
     def make_prediction(self, x, tree):
         """
+        This is a recursive function used to traverse the decision tree based on the values of the features in the input
+        instance, and return the predicted value when a leaf node is reached.
 
         :param x:
         :param tree:
@@ -160,6 +185,8 @@ class MyDecisionTreeRegressor:
 
     def predict(self, X):
         """
+        This function uses the make_prediction function to predict the target value for each instance in the input
+        dataset. It returns a list of predictions for all instances.
 
         :param X:
         :return:
